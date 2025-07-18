@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Results</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+    }
+
+    .fullscreen-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .overlay-content {
+      position: relative;
+      z-index: 2;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      max-width: 800px;
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    .result-box {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .tour-card {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    button {
+      padding: 8px 12px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="video-container"></div>
+
+  <div class="overlay-content">
+    <h1>Search Results</h1>
+    <div class="result-box" id="result"></div>
+  </div>
+
+  <script>
+    // Generate all dates from 2025-01-01 to 2026-12-31
+    function generateAllDates(startYear, endYear) {
+      const dates = [];
+      const startDate = new Date(`${startYear}-01-01`);
+      const endDate = new Date(`${endYear}-12-31`);
+
+      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        dates.push(`${year}-${month}-${day}`);
+      }
+
+      return dates;
+    }
+
+    const allDates = generateAllDates(2025, 2026);
+
+    const tours = [
+      {
+        id: 1,
+        name: "Bouddhanath",
+        location: "Bouddhanath",
+        availableDates: allDates,
+        price: 1200,
+        duration: "14 days",
+        video: "videos/bouddhanath.mp4"
+      },
+      {
+        id: 2,
+        name: "Everest Base Camp",
+        location: "Everest",
+        availableDates: allDates,
+        price: 1000,
+        duration: "12 days",
+        video: "videos/everest.mp4"
+      },
+      {
+        id: 3,
+        name: "Bhaktapur Durbar Square",
+        location: "Bhaktapur Durbar Square",
+        availableDates: allDates,
+        price: 600,
+        duration: "5 days",
+        video: "videos/patan-durbar-square.mp4"
+      }
+    ];
+
+    const params = new URLSearchParams(window.location.search);
+    const locationInput = params.get("location")?.toLowerCase() || "";
+    const dateInput = params.get("date");
+
+    const resultDiv = document.getElementById("result");
+    const videoContainer = document.getElementById("video-container");
+
+    const filteredTours = tours.filter(tour => {
+      const locationMatch = tour.location.toLowerCase().includes(locationInput);
+      const dateMatch = tour.availableDates.includes(dateInput);
+      return locationMatch && dateMatch;
+    });
+
+    if (filteredTours.length === 0) {
+      resultDiv.innerHTML = `<p>No tours found matching your criteria.</p>`;
+    } else {
+      const selectedTour = filteredTours[0];
+
+      if (selectedTour.video) {
+        videoContainer.innerHTML = `
+          <video class="fullscreen-video" autoplay loop muted playsinline>
+            <source src="${selectedTour.video}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        `;
+      }
+
+      resultDiv.innerHTML = filteredTours.map(tour => `
+        <div class="tour-card">
+          <h3>${tour.name}</h3>
+          <p><strong>Location:</strong> ${tour.location}</p>
+          <p><strong>Duration:</strong> ${tour.duration}</p>
+          <p><strong>Price:</strong> $${tour.price}</p>
+          <button onclick="bookTour(${tour.id})">Book Now</button>
+        </div>
+      `).join("");
+    }
+
+    function bookTour(tourId) {
+      const tour = tours.find(t => t.id === tourId);
+      if (!tour) return alert("Tour not found.");
+
+      const name = prompt("Enter your full name to confirm booking:");
+      if (!name) return alert("Booking cancelled. Name is required.");
+
+      const email = prompt("Enter your email address:");
+      if (!email) return alert("Booking cancelled. Email is required.");
+
+      alert(`Thank you, ${name}! Your booking for "${tour.name}" on ${dateInput} is confirmed. We will contact you at ${email}.`);
+    }
+  </script>
+
+</body>
+</html>

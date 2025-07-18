@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog Details</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .blog-content {
+      max-width: 900px;
+      margin: auto;
+      padding: 2rem;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+    }
+
+    .blog-content.fade-in {
+      opacity: 1;
+    }
+
+    .blog-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      margin-bottom: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 2rem;
+      background: #ff4c60;
+      color: #fff;
+      padding: 0.8rem 1.6rem;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #e84154;
+    }
+  </style>
+</head>
+<body>
+  <section class="section__container">
+    <div id="blogContent" class="blog-content"></div>
+    <a href="index.html" class="btn">← Back to Blogs</a>
+  </section>
+
+  <script>
+    const blogData = {
+      1: {
+        title: "Top 10 Must-Visit Destinations for Your Next Adventure",
+        image: "/blog-1.jpg",
+        content: `
+          Discover the most breathtaking places across the globe that every traveler should explore.
+          From the lush landscapes of Bali to the historic ruins of Machu Picchu, this list will fuel your wanderlust.
+        `
+      },
+      2: {
+        title: "Travel Smart: Essential Tips for Stress-Free Vacations",
+        image: "/blog-2.jpg",
+        content: `
+          Want a smoother travel experience? Learn how to pack efficiently, avoid delays, and travel like a pro with these essential tips.
+        `
+      },
+      3: {
+        title: "Hidden Gems: Discover Offbeat Locations for Unique Experience",
+        image: "/blog-3.jpg",
+        content: `
+          Escape the crowds and explore places most travelers don’t know exist — hidden beaches, quaint villages, and serene mountain towns.
+        `
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const blog = blogData[id];
+
+      const blogDiv = document.getElementById("blogContent");
+
+      if (blog) {
+        blogDiv.innerHTML = `
+          <img src="${blog.image}" alt="Blog Image" class="blog-image" />
+          <h1>${blog.title}</h1>
+          <p>${blog.content}</p>
+        `;
+
+        // Smooth fade-in animation
+        setTimeout(() => {
+          blogDiv.classList.add("fade-in");
+        }, 100);
+      } else {
+        blogDiv.innerHTML = `<h2>Blog Not Found</h2>`;
+      }
+    });
+  </script>
+</body>
+</html>
